@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 
 app = Flask(__name__, template_folder='Template')
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///instance/database.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.secret_key = os.environ.get("SECRET_KEY")
 
 db = SQLAlchemy(app)
