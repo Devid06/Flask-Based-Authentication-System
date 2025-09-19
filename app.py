@@ -1,11 +1,13 @@
+import os
 from flask import Flask, request, render_template, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app = Flask(__name__, template_folder='Template')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+app.secret_key = os.environ.get("SECRET_KEY")
+
 db = SQLAlchemy(app)
-app.secret_key = 'secret_key'  # Replace with a strong random key
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,7 +69,7 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
-    if session.get('email'):  # Use get to avoid KeyError if email not in session
+    if session.get('email'):
         user = User.query.filter_by(email=session['email']).first()
         return render_template('dashboard.html', user=user)
 
@@ -79,7 +81,3 @@ def logout():
     session.pop('email', None)
     return redirect('/login')
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
-    app.run(host="0.0.0.0", port=5000)
